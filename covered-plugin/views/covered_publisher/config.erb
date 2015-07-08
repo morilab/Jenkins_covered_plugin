@@ -1,6 +1,9 @@
 <%
 f = taglib("/lib/form")
-f.entry(:title=>"Version",:field=>"version",:description=>"Ver.") do
+f.entry(:field=>"cdd_file" ,:title=>"input CDD File",:description=>"coverage.cdd") do
+    f.textbox
+end
+f.entry(:field=>"xml_file" ,:title=>"output XML File",:description=>"coverage.xml") do
     f.textbox
 end
 %>
