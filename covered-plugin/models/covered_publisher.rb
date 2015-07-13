@@ -1,26 +1,8 @@
 require 'rexml/document'
 require 'open3'
+require_relative 'cov2xml'
 
 class CoveredPublisher < Jenkins::Tasks::Publisher
-    module STATE
-        IDLE    = 0
-        LINE    = 1
-        TOGGLE  = 2
-        COMBI   = 3
-        STATE   = 4
-        MODULE  = 10
-    end
-
-    module TYPE
-        LINE    = 0
-        TOGGLE  = 1
-        COMBI   = 2
-        STATE   = 3
-        RACE    = 4
-        ASSERT  = 5
-        MEMORY  = 6
-    end
-
 
     display_name "Covered publisher"
     
@@ -35,6 +17,10 @@ class CoveredPublisher < Jenkins::Tasks::Publisher
     # @param [Jenkins::Model::Build] build the build which will begin
     # @param [Jenkins::Model::Listener] listener the listener for this build.
     def prebuild(build, listener)
+	cov2xml = Cov2xml.new
+	cov2xml.cdd_file = @cdd_file
+	cov2xml.xml_file = @xml_file
+	cov2xml.exec
     end
 
     # @param [Jenkins::Model::Build] build on which to run this step
@@ -43,10 +29,5 @@ class CoveredPublisher < Jenkins::Tasks::Publisher
     def perform(build, launcher, listener)
         listener << "CDD File : %s" % @cdd_file
         listener << "XML File : %s" % @xml_file
-        begin
-            launcher.execute("bash","-c","covered report -d v -m lc -c #{@cdd_file}",{out:listener})
-        rescue
-            build.abort
-        end
     end
 end
